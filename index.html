@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EFL Study: On the Phone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, #f8fafc 25%, #f1f5f9 50%, #f8fafc 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .custom-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+        .speaking .pulse-effect {
+            animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#F8FAFC] min-h-screen flex flex-col items-center py-8 px-4 font-sans text-slate-900">
+
+    <!-- Brand Header -->
+    <header class="text-center mb-8">
+        <div class="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-bold tracking-widest uppercase mb-3">
+            Grade 8 English • Unit 4
+        </div>
+        <h1 class="text-4xl font-extrabold tracking-tight text-slate-900 mb-2">On the Phone</h1>
+        <p class="text-slate-500 font-medium">Visual Study & Practice Tool</p>
+    </header>
+
+    <!-- Progress Indicator -->
+    <div class="w-full max-w-md mb-6 px-2">
+        <div class="flex justify-between items-center mb-2">
+            <span id="progress-text" class="text-xs font-bold text-slate-400 uppercase tracking-tighter">Card 1 / 32</span>
+            <span id="percentage-text" class="text-xs font-bold text-indigo-500">3%</span>
+        </div>
+        <div class="h-2 bg-slate-200 w-full rounded-full overflow-hidden">
+            <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-500 ease-out" style="width: 3%"></div>
+        </div>
+    </div>
+
+    <!-- Flashcard App Container -->
+    <div id="card-container" class="w-full max-w-md aspect-[4/5] perspective-1000 cursor-pointer mb-8">
+        <div id="card-inner" class="card-inner relative w-full h-full preserve-3d rounded-3xl custom-shadow">
+            
+            <!-- Front: English + AI Image -->
+            <div class="absolute inset-0 bg-white rounded-3xl backface-hidden flex flex-col p-6 border border-slate-100">
+                <div id="image-wrapper" class="w-full aspect-square bg-slate-50 rounded-2xl mb-8 overflow-hidden flex items-center justify-center relative border border-slate-50">
+                    <div id="image-loading" class="absolute inset-0 shimmer hidden"></div>
+                    <div id="image-placeholder" class="text-slate-300 flex flex-col items-center">
+                        <svg class="w-12 h-12 mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Loading Visual...</span>
+                    </div>
+                    <img id="card-image" src="" alt="Study Visual" class="w-full h-full object-cover hidden">
+                </div>
+                
+                <div class="flex-grow flex flex-col justify-center items-center text-center px-4">
+                    <h2 id="phrase-en" class="text-2xl font-extrabold text-slate-800 leading-tight"></h2>
+                </div>
+                
+                <div class="mt-4 flex items-center justify-center gap-2 text-slate-300">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"></path></svg>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">Tap to flip for Turkish</span>
+                </div>
+            </div>
+
+            <!-- Back: Turkish Meaning -->
+            <div class="absolute inset-0 bg-indigo-600 rounded-3xl backface-hidden rotate-y-180 flex flex-col items-center justify-center p-10 text-white text-center shadow-inner">
+                <div class="mb-6 opacity-40">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
+                </div>
+                <h2 id="phrase-tr" class="text-3xl font-black leading-tight tracking-tight"></h2>
+                <div class="mt-12 text-indigo-300 text-[10px] font-bold uppercase tracking-widest">Tap to return</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Navigation Controls -->
+    <div class="flex items-center gap-6">
+        <button id="prev-btn" class="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-slate-50 transition-all active:scale-90 disabled:opacity-20 shadow-sm">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
+        </button>
+        
+        <button id="speak-btn" class="relative px-10 py-4 rounded-2xl bg-slate-900 text-white font-bold flex items-center gap-3 hover:bg-black transition-all shadow-xl active:scale-95 group overflow-hidden">
+            <div class="pulse-effect absolute inset-0 bg-white/20 rounded-2xl hidden"></div>
+            <svg class="w-5 h-5 z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+            <span class="z-10 btn-text">Listen</span>
+        </button>
+
+        <button id="next-btn" class="w-14 h-14 rounded-2xl bg-white border border-slate-200 text-slate-400 flex items-center justify-center hover:bg-slate-50 transition-all active:scale-90 disabled:opacity-20 shadow-sm">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-auto pt-10 text-slate-400 text-[10px] font-bold uppercase tracking-widest text-center">
+        EFL Digital Unit • Practice Application
+    </footer>
+
+    <script>
+        const cards = [
+            { en: "May I speak to Mr. Smith, please?", tr: "Mr. Smith ile görüşebilir miyim?" },
+            { en: "Hold on a moment, please.", tr: "Bir dakika bekleyin, lütfen." },
+            { en: "Would you like to leave a message?", tr: "Mesaj bırakmak ister misiniz?" },
+            { en: "I will put you through now.", tr: "Sizi şimdi bağlıyorum." },
+            { en: "I'm afraid it's a bad line.", tr: "Korkarım hat cızırtılı/kötü." },
+            { en: "I will call back later.", tr: "Daha sonra tekrar arayacağım." },
+            { en: "Can I take a message?", tr: "Bir mesaj alabilir miyim?" },
+            { en: "I'll get him/her.", tr: "Onu çağırıyorum / telefona veriyorum." },
+            { en: "Could you repeat that, please?", tr: "Tekrar edebilir misiniz?" },
+            { en: "Available", tr: "Müsait / Uygun" },
+            { en: "Busy / Engaged", tr: "Meşgul (Hat)" },
+            { en: "Hang up", tr: "Telefonu kapatmak" },
+            { en: "Pick up", tr: "Telefonu açmak" },
+            { en: "Dial a number", tr: "Numara tuşlamak" },
+            { en: "Appointment", tr: "Randevu" },
+            { en: "Memo", tr: "Kısa not" },
+            { en: "Urgent", tr: "Acil" },
+            { en: "Connection", tr: "Bağlantı" },
+            { en: "Customer Service", tr: "Müşteri hizmetleri" },
+            { en: "Call Center", tr: "Çağrı merkezi" },
+            { en: "Contact", tr: "İrtibata geçmek" },
+            { en: "Extension", tr: "Dahili numara" },
+            { en: "Confirm", tr: "Onaylamak" },
+            { en: "As soon as possible", tr: "Mümkün olan en kısa sürede" },
+            { en: "See you later", tr: "Sonra görüşürüz" },
+            { en: "Be right back", tr: "Hemen döneceğim" },
+            { en: "Thanks", tr: "Teşekkürler" },
+            { en: "Face-to-face", tr: "Yüz yüze" },
+            { en: "Social network", tr: "Sosyal ağ" },
+            { en: "Text a message", tr: "Mesaj yazmak" },
+            { en: "Keep in touch", tr: "İrtibatta kalmak" },
+            { en: "Bad line", tr: "Kötü hat" }
+        ];
+
+        let currentIndex = 0;
+        const imageCache = new Map();
+        const apiKey = "";
+        let isSpeaking = false;
+
+        const cardContainer = document.getElementById('card-container');
+        const phraseEn = document.getElementById('phrase-en');
+        const phraseTr = document.getElementById('phrase-tr');
+        const progressText = document.getElementById('progress-text');
+        const percentageText = document.getElementById('percentage-text');
+        const progressBar = document.getElementById('progress-bar');
+        const cardImage = document.getElementById('card-image');
+        const imageLoading = document.getElementById('image-loading');
+        const imagePlaceholder = document.getElementById('image-placeholder');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const speakBtn = document.getElementById('speak-btn');
+
+        window.onload = () => updateCard();
+
+        cardContainer.addEventListener('click', () => {
+            document.getElementById('card-inner').classList.toggle('flipped');
+        });
+
+        prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentIndex > 0) { currentIndex--; updateCard(); }
+        });
+
+        nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentIndex < cards.length - 1) { currentIndex++; updateCard(); }
+        });
+
+        async function playTts(text) {
+            if (isSpeaking) return;
+            isSpeaking = true;
+            speakBtn.classList.add('speaking');
+            speakBtn.querySelector('.pulse-effect').classList.remove('hidden');
+            speakBtn.querySelector('.btn-text').innerText = "Playing...";
+
+            try {
+                const response = await fetchWithRetry(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: `Say clearly and naturally: ${text}` }] }],
+                            generationConfig: {
+                                responseModalities: ["AUDIO"],
+                                speechConfig: {
+                                    voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } }
+                                }
+                            }
+                        })
+                    }
+                );
+
+                const result = await response.json();
+                const audioData = result.candidates[0].content.parts[0].inlineData.data;
+                const mimeType = result.candidates[0].content.parts[0].inlineData.mimeType;
+                const sampleRate = parseInt(mimeType.split('rate=')[1]) || 24000;
+
+                const wavUrl = pcmToWav(audioData, sampleRate);
+                const audio = new Audio(wavUrl);
+                audio.onended = () => resetSpeakBtn();
+                await audio.play();
+            } catch (error) {
+                console.error("TTS Error:", error);
+                resetSpeakBtn();
+            }
+        }
+
+        function resetSpeakBtn() {
+            isSpeaking = false;
+            speakBtn.classList.remove('speaking');
+            speakBtn.querySelector('.pulse-effect').classList.add('hidden');
+            speakBtn.querySelector('.btn-text').innerText = "Listen";
+        }
+
+        speakBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            playTts(cards[currentIndex].en);
+        });
+
+        function pcmToWav(base64Pcm, sampleRate) {
+            const pcmData = Uint8Array.from(atob(base64Pcm), c => c.charCodeAt(0)).buffer;
+            const wavHeader = new ArrayBuffer(44);
+            const view = new DataView(wavHeader);
+
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+
+            writeString(0, 'RIFF');
+            view.setUint32(4, 32 + pcmData.byteLength, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // PCM
+            view.setUint16(22, 1, true); // Mono
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, sampleRate * 2, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, pcmData.byteLength, true);
+
+            const blob = new Blob([wavHeader, pcmData], { type: 'audio/wav' });
+            return URL.createObjectURL(blob);
+        }
+
+        function updateCard() {
+            document.getElementById('card-inner').classList.remove('flipped');
+            const card = cards[currentIndex];
+            phraseEn.innerText = card.en;
+            phraseTr.innerText = card.tr;
+            
+            const progress = ((currentIndex + 1) / cards.length) * 100;
+            progressText.innerText = `Card ${currentIndex + 1} / ${cards.length}`;
+            percentageText.innerText = Math.round(progress) + "%";
+            progressBar.style.width = progress + "%";
+            
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex === cards.length - 1;
+            loadImage(card.en);
+        }
+
+        async function loadImage(promptText) {
+            cardImage.classList.add('hidden');
+            imagePlaceholder.classList.remove('hidden');
+            imageLoading.classList.remove('hidden');
+
+            if (imageCache.has(promptText)) {
+                displayImage(imageCache.get(promptText));
+                return;
+            }
+
+            try {
+                const response = await fetchWithRetry(
+                    `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            instances: { 
+                                prompt: `A professional, simple 2D flat vector icon for a textbook showing: ${promptText}. Solid light background, no text, clean lines.` 
+                            },
+                            parameters: { sampleCount: 1 }
+                        })
+                    }
+                );
+
+                const result = await response.json();
+                if (result.predictions?.[0]) {
+                    const url = `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                    imageCache.set(promptText, url);
+                    displayImage(url);
+                } else { throw new Error(); }
+            } catch (error) {
+                imageLoading.classList.add('hidden');
+            }
+        }
+
+        function displayImage(url) {
+            cardImage.src = url;
+            cardImage.classList.remove('hidden');
+            imagePlaceholder.classList.add('hidden');
+            imageLoading.classList.add('hidden');
+        }
+
+        async function fetchWithRetry(url, options, retries = 5, backoff = 1000) {
+            try {
+                const res = await fetch(url, options);
+                if (!res.ok) throw new Error();
+                return res;
+            } catch (err) {
+                if (retries <= 0) throw err;
+                await new Promise(r => setTimeout(r, backoff));
+                return fetchWithRetry(url, options, retries - 1, backoff * 2);
+            }
+        }
+    </script>
+</body>
+</html>
